@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-
+import 'package:sih_app/views/profile/profile.dart';
 import 'package:sih_app/views/register/pages/registration_page.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: RegisterPage(),
+
     );
   }
 }

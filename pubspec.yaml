@@ -41,6 +41,8 @@ dependencies:
   firebase_messaging: ^14.6.5
   firebase_storage: ^11.2.5
   fluttertoast: ^8.2.2
+  string_validator: ^1.0.0
+  email_validator: ^2.1.17
 
 dev_dependencies:
   flutter_test:
