@@ -1,3 +1,3 @@
 class AppConst {
-  String appName = "Test";
+  String appName = "ZeroDevInc Mobile Client";
 }

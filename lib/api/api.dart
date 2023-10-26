@@ -11,7 +11,9 @@ class API {
   var client = http.Client();
   static const baseUrl = "https://testsihlogin-chaitanyakanhar2004.b4a.run/";
   static const userSignUP = "${baseUrl}register/";
-  static const userSignIn = "${baseUrl}login/"; // live
+  static const userSignIn = "${baseUrl}login/";
+  static const booking = "${baseUrl}booking";
+  static const AllParkings = "${baseUrl}allparkings"; // live
   //static const apiKey = "Replace your API key";
   Future<RestResponse> signup({email, pass, username}) async {
     var data =
@@ -33,5 +35,33 @@ class API {
     //final responseJson = jsonDecode(response.body);
     print(response.body);
     return LoginResponse.fromJson(response.body);
+  }
+
+  Future bookingDatasend(
+      {myid, starttime, endtime, vehicle_no, vehicle_type}) async {
+    final response = await http.post(
+      Uri.parse(booking),
+      body: jsonEncode({
+        "vehicle_number": vehicle_no,
+        "vehicle_type": vehicle_type,
+        "start_time": starttime,
+        "end_time": endtime,
+        "parking_id": myid
+      }),
+      headers: {
+        "Content-Type": "application/json", // Set the content type to JSON
+      },
+    );
+
+    print(response.statusCode);
+    return response;
+  }
+
+  Future getAllParkings() async {
+    final response = await http.get(Uri.parse(AllParkings));
+
+    //final responseJson = jsonDecode(response.body);
+    print(response.body);
+    return response.body;
   }
 }

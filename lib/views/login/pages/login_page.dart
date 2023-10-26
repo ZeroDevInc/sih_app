@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sih_app/api/api.dart';
@@ -9,6 +11,7 @@ import 'package:sih_app/utils/components/my_button.dart';
 import 'package:sih_app/utils/components/my_textfield.dart';
 import 'package:sih_app/utils/components/square_tile.dart';
 import 'package:sih_app/views/home/home.dart';
+import 'package:sih_app/views/map/mapscreen.dart';
 import 'package:sih_app/views/register/pages/registration_page.dart';
 
 class LoginPage extends StatelessWidget {
@@ -20,9 +23,17 @@ class LoginPage extends StatelessWidget {
   final auth = FirebaseAuth.instance;
 
   // sign user in method
-  pushtoHome(BuildContext context) {
-    if (context.mounted)
-      NavigationHelper.navigateToSecondRoute(context, ParkingBookingPage());
+  pushtoHome(BuildContext context) async {
+    final locations = await API().getAllParkings();
+    print(locations);
+    List<dynamic> jsonList = jsonDecode(locations);
+
+    List<Map<String, dynamic>> mapsList =
+        List<Map<String, dynamic>>.from(jsonList);
+    if (context.mounted) {
+      NavigationHelper.navigateToSecondRoute(
+          context, MapScreen(locs: mapsList));
+    }
   }
 
   Future<LoginResponse> signUserIn() async {
