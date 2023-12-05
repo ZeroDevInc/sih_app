@@ -14,12 +14,23 @@ import 'package:sih_app/views/home/home.dart';
 import 'package:sih_app/views/map/mapscreen.dart';
 import 'package:sih_app/views/register/pages/registration_page.dart';
 
-class LoginPage extends StatelessWidget {
+FocusNode emailfocusNode = FocusNode();
+FocusNode passwordfocusNode = FocusNode();
+bool isLoading = false;
+
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   // text editing controllers
   final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   final auth = FirebaseAuth.instance;
 
   // sign user in method
@@ -31,8 +42,7 @@ class LoginPage extends StatelessWidget {
     List<Map<String, dynamic>> mapsList =
         List<Map<String, dynamic>>.from(jsonList);
     if (context.mounted) {
-      NavigationHelper.navigateToSecondRoute(
-          context, MapScreen(locs: mapsList));
+      NavigationHelper.navigateToSecondRoute(context, MapScreen());
     }
   }
 
@@ -99,6 +109,8 @@ class LoginPage extends StatelessWidget {
 
                 // username textfield
                 MyTextField(
+                  focusNode: emailfocusNode,
+                  nextFocusNode: passwordfocusNode,
                   controller: emailController,
                   hintText: 'Email',
                   obscureText: false,
@@ -108,6 +120,7 @@ class LoginPage extends StatelessWidget {
 
                 // password textfield
                 MyTextField(
+                  focusNode: passwordfocusNode,
                   controller: passwordController,
                   hintText: 'Password',
                   obscureText: true,
@@ -133,15 +146,40 @@ class LoginPage extends StatelessWidget {
 
                 // sign in button
                 MyButton(
+                  isLoading: isLoading,
+                  buttonName: "Login",
                   onTap: () async {
+                    if (emailController.text.isEmpty ||
+                        passwordController.text.isEmpty) {
+                      showToast("Please fill all the fields");
+                      return;
+                    }
+                    if (!emailController.text.contains("@")) {
+                      showToast("Please enter a valid email");
+                      return;
+                    }
+                    if (passwordController.text.length < 6) {
+                      showToast("Password must be atleast 6 characters long");
+                      return;
+                    }
+                    setState(() {
+                      isLoading = true;
+                    });
+
                     LoginResponse res = await signUserIn();
                     if (res.status == 200) {
+                      setState(() {
+                        isLoading = false;
+                      });
                       if (context.mounted) {
                         var username = res.data["username"];
                         showToast("Successfully logged in as ${username}");
                         pushtoHome(context);
                       }
                     } else {
+                      setState(() {
+                        isLoading = false;
+                      });
                       showToast(res.data["message"]);
                       print(res.data["message"]);
                     }
@@ -150,53 +188,6 @@ class LoginPage extends StatelessWidget {
 
                 const SizedBox(height: 50),
 
-                // or continue with
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          'Or continue with',
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 50),
-
-                // google + apple sign in buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    // google button
-                    SquareTile(imagePath: 'assets/images/google.png'),
-
-                    SizedBox(width: 25),
-
-                    // apple button
-                    // SquareTile(imagePath: 'assets/images/apple.png')
-                  ],
-                ),
-
-                const SizedBox(height: 50),
-
-                // not a member? register now
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

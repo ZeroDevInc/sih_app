@@ -1,15 +1,21 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 class MyTextField extends StatelessWidget {
   final controller;
   final String hintText;
   final bool obscureText;
+  final FocusNode? focusNode;
+  final FocusNode? nextFocusNode;
 
   const MyTextField({
     super.key,
     required this.controller,
     required this.hintText,
     required this.obscureText,
+    this.focusNode,
+    this.nextFocusNode,
   });
 
   @override
@@ -17,6 +23,11 @@ class MyTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextField(
+        focusNode: focusNode,
+        onSubmitted: (value) {
+          log("onSubmitted");
+          nextFocusNode?.requestFocus();
+        },
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(

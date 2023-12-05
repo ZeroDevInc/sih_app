@@ -8,17 +8,28 @@ import 'package:sih_app/utils/const.dart';
 
 import 'package:sih_app/utils/components/my_button.dart';
 import 'package:sih_app/utils/components/my_textfield.dart';
-import 'package:sih_app/utils/components/square_tile.dart';
+
 import 'package:sih_app/views/login/pages/login_page.dart';
 
-class RegisterPage extends StatelessWidget {
+bool isLoading = false;
+
+class RegisterPage extends StatefulWidget {
   RegisterPage({super.key});
 
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   // text editing controllers
   final appName = AppConst().appName;
+
   final fullnameController = TextEditingController();
+
   final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   pushToLogin(BuildContext context) {
     if (context.mounted)
       NavigationHelper.navigateToSecondRoute(context, LoginPage());
@@ -93,18 +104,43 @@ class RegisterPage extends StatelessWidget {
 
                 // sign in button
                 MyButton(
+                  isLoading: isLoading,
+                  buttonName: "Sign Up",
                   onTap: () async {
+                    if (fullnameController.text.isEmpty ||
+                        emailController.text.isEmpty ||
+                        passwordController.text.isEmpty) {
+                      showToast("Please fill all fields");
+                      return;
+                    }
+                    bool isEmailValid = RegExp(
+                            r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+                        .hasMatch(emailController.text);
+                    if (!isEmailValid) {
+                      showToast("Please enter a valid email");
+                      return;
+                    }
+
+                    setState(() {
+                      isLoading = true;
+                    });
                     RestResponse resp = await signUserIn(
                         username: fullnameController.text,
                         email: emailController.text,
                         pass: passwordController.text);
                     if (resp.status == 200) {
                       showToast("You account has been created. Kindly login");
+                      setState(() {
+                        isLoading = false;
+                      });
                       if (context.mounted) {
                         Future.delayed(Duration(seconds: 1))
                             .then((value) => pushToLogin(context));
                       }
                     } else {
+                      setState(() {
+                        isLoading = false;
+                      });
                       showToast(resp.detail);
                     }
                   },
@@ -112,53 +148,6 @@ class RegisterPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // or continue with
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          'Or continue with',
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                // google + apple sign in buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    // google button
-                    SquareTile(imagePath: 'assets/images/google.png'),
-
-                    SizedBox(width: 25),
-
-                    // apple button
-                    // SquareTile(imagePath: 'assets/images/apple.png')
-                  ],
-                ),
-
-                const SizedBox(height: 50),
-
-                // not a member? register now
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:sih_app/api/api.dart';
 import 'package:sih_app/helpers/navigator_helper.dart';
+import 'package:sih_app/main.dart';
 import 'package:sih_app/utils/components/flut_toast.dart';
 import 'package:sih_app/views/map/MapLocationPage.dart';
 
@@ -107,7 +108,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     starttime: widget.startTime,
                     vehicle_no: vehicleNumber,
                     vehicle_type: vehicleType,
-                    myid: widget.marker.markerId.value);
+                    myid: widget.marker.markerId.value,
+                    user_email: auth.currentUser!.email);
                 print(response.statusCode);
                 if (response.statusCode == 200) {
                   showToast("Successfully booked");
@@ -115,10 +117,11 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   print(widget.marker.position.longitude);
                   NavigationHelper.navigateToSecondRoute(
                       context,
-                      MapPage(
-                          destinationLatitude: widget.marker.position.latitude,
-                          destinationLongitude:
-                              widget.marker.position.longitude));
+                      PolyMap(
+                          sourceLocation: LatLng(30.7333, 76.7794),
+                          destinationLocation: LatLng(
+                              widget.marker.position.latitude,
+                              widget.marker.position.longitude)));
                 } else {
                   showToast("Booking failed");
                 }

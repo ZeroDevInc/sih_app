@@ -6,10 +6,12 @@ import 'package:sih_app/modal/rest_response.dart';
 import 'package:http/http.dart' as http;
 
 var client = http.Client();
+const serverUrl = "https://testsihlogin-chaitanyakanhar2004.b4a.run/";
 
 class API {
   var client = http.Client();
-  static const baseUrl = "https://testsihlogin-chaitanyakanhar2004.b4a.run/";
+  static const baseUrl = serverUrl;
+
   static const userSignUP = "${baseUrl}register/";
   static const userSignIn = "${baseUrl}login/";
   static const booking = "${baseUrl}booking";
@@ -38,7 +40,7 @@ class API {
   }
 
   Future bookingDatasend(
-      {myid, starttime, endtime, vehicle_no, vehicle_type}) async {
+      {myid, starttime, endtime, vehicle_no, vehicle_type, user_email}) async {
     final response = await http.post(
       Uri.parse(booking),
       body: jsonEncode({
@@ -46,7 +48,8 @@ class API {
         "vehicle_type": vehicle_type,
         "start_time": starttime,
         "end_time": endtime,
-        "parking_id": myid
+        "parking_id": myid,
+        "user_email": user_email
       }),
       headers: {
         "Content-Type": "application/json", // Set the content type to JSON
@@ -61,7 +64,7 @@ class API {
     final response = await http.get(Uri.parse(AllParkings));
 
     //final responseJson = jsonDecode(response.body);
-    print(response.body);
+
     return response.body;
   }
 }
